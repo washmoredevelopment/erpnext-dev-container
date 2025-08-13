@@ -1,0 +1,34 @@
+services:
+  frappe:
+    build:
+      context: .
+      args:
+        NODE_VERSION: ${NODE_VERSION:-18}
+    container_name: frappe-dev
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"    # Frappe web server
+      - "9000:9000"    # Frappe socketio
+      # - "3306:3306"  # MariaDB (optionally expose to host)
+      # - "6379:6379"  # Redis (optionally expose to host)
+      # - "3010:3010"  # Dev port (optionally expose to host)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - frappe-data:/home/frappeuser
+      - frappe-mysql:/var/lib/mysql
+      - ${SSH_KEY_PATH}:/tmp/ssh_key:ro
+    tty: true
+    stdin_open: true
+    # privileged: true  # Optional, but required for some cases
+    restart: "no"  # Disable auto-restart during initial setup
+    environment:
+      # Format: app_name:branch:git_url (branch and git_url are optional)
+      APPS: |
+        erpnext:version-15
+        hrms:version-15
+      # custom_app:version-15:git@github.com:username/custom_app.git
+volumes:
+  frappe-data:
+  frappe-mysql:
