@@ -14,6 +14,7 @@ Frappe provides an [official dev container example](https://github.com/frappe/fr
 - Developer mode and `bench watch` enabled by default
 - Persistent data volumes
 - Environment variable configuration
+- Supports ARM & AMD64 architecture
 
 ## Prerequisites
 
@@ -55,7 +56,13 @@ docker compose up
    - Configure localhost access
    - Build all frontend assets
 
-6. Access ERPNext at: http://localhost:8000
+6. After install has completed, restart the container:
+```bash
+docker compose down
+docker compose up
+```
+
+7. Access ERPNext at: http://localhost:8000
    - Username: `Administrator`
    - Password: Your `ADMIN_PASSWORD` from `.env` (default: `admin`)
 

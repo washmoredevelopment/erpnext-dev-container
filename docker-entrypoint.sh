@@ -124,6 +124,19 @@ install_apps() {
     fi
 }
 
+# Wait for Redis instances to be ready
+wait_for_redis() {
+    echo "Waiting for Redis services to be ready..."
+    for port in 11000 12000 13000; do
+        while ! redis-cli -p $port ping >/dev/null 2>&1; do
+            echo "Waiting for Redis on port $port..."
+            sleep 2
+        done
+        echo "Redis on port $port is ready"
+    done
+    echo "All Redis services ready"
+}
+
 # Function to install apps on site
 install_apps_on_site() {
     local site_name="$1"
@@ -252,6 +265,9 @@ if [ ! -d "$HOME/frappe-bench/sites/${SITE_NAME:-development.localhost}" ]; then
         redis-server --port 13000 --daemonize yes --bind 127.0.0.1
         echo "Redis instances started for version-15."
         
+        # Wait for Redis instances to be ready before proceeding
+        wait_for_redis
+        
         bench setup redis
         touch "$HOME/frappe-bench/.redis_setup"
     fi
@@ -291,6 +307,9 @@ else
         redis-server --port 12000 --daemonize yes --bind 127.0.0.1
         redis-server --port 13000 --daemonize yes --bind 127.0.0.1
         echo "Redis instances started for version-15."
+        
+        # Wait for Redis instances to be ready before proceeding
+        wait_for_redis
         
         bench setup redis
         touch "$HOME/frappe-bench/.redis_setup"
