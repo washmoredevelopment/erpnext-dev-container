@@ -1,266 +1,225 @@
-# Frappe/ERPNext Development Container
+<div align="center" markdown="1">
 
-This Docker setup provides a complete development environment for Frappe/ERPNext v15 on Ubuntu 24.04 LTS. This container is loosely based on [erpnext_quick_install](https://github.com/flexcomng/erpnext_quick_install), make sure to check it out for production installations.
+<a href="https://github.com/washmoredevelopment/erpnext-dev-container">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/erpdev_white.png">
+    <img alt="logo" src="./.github/assets/erpdev_blue.png" width="100">
+  </picture>
+</a>
 
-Frappe provides an [official dev container example](https://github.com/frappe/frappe_docker/blob/main/docs/development.md), so why make this? We wanted a quick, reliable, and repeatable way to spin up development environments for Frappe v15. The container handles all dependencies, app installations, and permissions on first startup. By default, the container installs with ERPNext and HRMS as configured in `docker-compose.yml`. 
+# ERPNext Dev Container
 
-## Features
+**One click containerized environment for ERPNext Development**
 
-- Single container setup for easy development
-- Ubuntu 24.04 LTS base image
-- Flexible app configuration - easily add or remove Frappe apps
-- Support for both public Frappe apps and private repositories with an optional SSH key
-- All required dependencies (MariaDB, Redis, Python, Node.js, etc.)
-- Developer mode and `bench watch` enabled by default
-- Persistent data volumes
-- Environment variable configuration
-- Supports ARM & AMD64 architecture
+  [![MIT License][license-shield]][license-url]
 
-## Prerequisites
+<p align="center">
+  <br />
+  <a href="https://github.com/washmoredevelopment/erpnext-dev-container/issues/new?labels=bug">Report Bug</a>
+  ·
+  <a href="https://github.com/washmoredevelopment/erpnext-dev-container/issues/new?labels=enhancement">Request Feature</a>
+</p>
 
-- Docker + Compose installed
-- At least 4GB of RAM available for Docker
-- 10GB+ of free disk space
+</div>
 
-## Quick Start
+<a id="readme-top"></a>
 
-1. Clone this repository:
-```bash
-git clone <your-repo-url>
-cd frappe-dev-container
-```
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+</details>
 
-2. Copy the example environment file:
-```bash
-cp env.example .env
-```
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-3. (Optional) Edit `.env` to customize:
-   - `SITE_NAME`: Your site name (default: development.localhost)
-   - `DB_ROOT_PASSWORD`: MariaDB root password
-   - `ADMIN_PASSWORD`: ERPNext Administrator password
-   - `SSH_KEY_PATH`: Path to SSH key for private repos
+ERPNext Dev Container is a single-container Docker setup for Frappe/ERPNext v15 development. It initializes a complete bench on first run, installs configured apps, creates a site, and provides a fast, repeatable workflow for local development on macOS, Linux, and Windows with Docker Desktop.
 
-4. Build and start the container:
-```bash
-docker compose build
-docker compose up
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-5. Wait for initialization (first run takes 10-15 minutes). The system will automatically:
-   - Initialize MariaDB with your configured password
-   - Create a new Frappe bench
-   - Install ERPNext application
-   - Create your site with ERPNext
-   - Enable developer mode
-   - Configure localhost access
-   - Build all frontend assets
+### Built With
 
-6. After install has completed, restart the container:
-```bash
-docker compose down
-docker compose up
-```
+<div align="left">
 
-7. Access ERPNext at: http://localhost:8000
+[![Docker][Docker]][Docker-url]
+[![Ubuntu][Ubuntu]][Ubuntu-url]
+[![Frappe][Frappe.io]][Frappe-url]
+[![ERPNext][ERPNext.com]][ERPNext-url]
+[![Python][Python.py]][Python-url]
+[![Node.js][Node.js]][Node-url]
+[![MariaDB][MariaDB]][MariaDB-url]
+[![Redis][Redis]][Redis-url]
+
+</div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+### Prerequisites
+
+* Docker Desktop with Compose v2
+* At least 4 GB RAM available to Docker
+* 10+ GB free disk space
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/washmoredevelopment/erpnext-dev-container.git
+   cd erpnext-dev-container
+   ```
+
+2. Copy the example environment file
+   ```bash
+   cp env.example .env
+   ```
+
+3. (Optional) Edit `.env`:
+   - `SITE_NAME` (default: `development.localhost`)
+   - `DB_ROOT_PASSWORD`
+   - `ADMIN_PASSWORD`
+   - `SSH_KEY_PATH` (for private repos)
+
+4. Build and start
+   ```bash
+   docker compose build
+   docker compose up -d
+   ```
+
+5. First run takes ~10–15 minutes to initialize
+
+6. After installation completes, restart
+   ```bash
+   docker compose down
+   docker compose up -d
+   ```
+
+7. Access ERPNext: http://localhost:8000
    - Username: `Administrator`
-   - Password: Your `ADMIN_PASSWORD` from `.env` (default: `admin`)
+   - Password: value of `ADMIN_PASSWORD` (default `admin`)
 
-## What Happens on First Run
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-The container automatically handles the complete setup:
+<!-- USAGE EXAMPLES -->
+## Usage
 
-1. **Service Initialization**:
-   - Starts MariaDB and Redis services
-   - Configures MariaDB with the specified root password
-
-2. **Bench Setup**:
-   - Initializes a new Frappe bench (version determined by first app in the list)
-   - Installs all apps specified in the `APPS` configuration in `docker-compose.yml`
-
-3. **Site Creation**:
-   - Creates a new site with your specified name
-   - Installs all configured apps on the site
-   - Enables developer mode
-   - Enables the scheduler
-   - Configures domain access for localhost
-   - Builds all frontend assets
-
-4. **Subsequent Runs**:
-   - Services start automatically
-   - Existing bench and site are used
-   - No re-initialization needed
-
-## Container Management
-
-#### Start the container:
+### Container management
 ```bash
-docker compose up
+docker compose up -d      # start
+docker compose down       # stop
+docker compose logs -f    # logs
 ```
 
-#### Start in background:
-```bash
-docker compose up -d
-```
-
-#### Stop the container:
-```bash
-docker compose down
-```
-
-#### View logs:
-```bash
-docker compose logs -f
-```
-
-#### Access container shell:
+### Shell and bench
 ```bash
 docker compose exec frappe zsh
-```
-
-#### Run bench commands:
-```bash
 docker compose exec frappe zsh -lc "cd /home/frappeuser/frappe-bench && bench <command>"
 ```
 
-Note: NVM is auto-sourced in zsh. For bash:
+### Container health
 ```bash
-docker compose exec frappe bash -lc "source ~/.nvm/nvm.sh && cd /home/frappeuser/frappe-bench && bench build"
+# Check container health
+docker ps  # Shows health: starting/healthy/unhealthy
+
+# View detailed health status
+docker exec -it frappe-dev cat /tmp/container_health
+
+# Manual health check
+docker exec -it frappe-dev /usr/local/bin/health-check
 ```
 
-## Data Persistence
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-The setup uses Docker volumes to persist:
-- Frappe user home directory (including frappe-bench): `frappe-data` volume (mounted at `/home/frappeuser`)
-- MariaDB databases: `frappe-mysql` volume
+<!-- FEATURES -->
+## Features
 
-To completely reset and start fresh:
-```bash
-docker compose down -v
-docker compose build --no-cache
-docker compose up
-```
+- Single-container setup on Ubuntu 24.04 LTS
+- Flexible app configuration via `APPS` in `docker-compose.yml`
+- Optional private repo access via `SSH_KEY_PATH`
+- All dependencies included (MariaDB, Redis, Python, Node)
+- Developer mode and `bench watch` enabled
+- Persistent volumes: `frappe-data` and `frappe-mysql`
+- Health checks with clear status and logs
+- ARM64 and AMD64 supported
 
-## Development Workflow
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-1. **Make code changes**: The frappe-bench directory is mounted as a volume, so changes are reflected immediately
+<!-- CONTRIBUTING -->
+## Contributing
 
-2. **Clear cache after backend changes**:
-```bash
-docker compose exec frappe zsh -lc "cd /home/frappeuser/frappe-bench && bench --site development.localhost clear-cache"
-```
+Contributions are welcome. If you have ideas or find issues, please open an issue or submit a pull request.
 
-3. **Build assets after frontend changes**:
-```bash
-docker compose exec frappe zsh -lc "cd /home/frappeuser/frappe-bench && bench build"
-```
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-4. **Watch for frontend changes** (auto-rebuild):
-```bash
-docker compose exec frappe zsh -lc "cd /home/frappeuser/frappe-bench && bench watch"
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Installing Apps
+<!-- LICENSE -->
+## License
 
-Apps are configured in the `docker-compose.yml` file under the `APPS` environment variable.
+Distributed under the MIT License. See `LICENSE` for more information.
 
-### Default Configuration:
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-```yaml
-environment:
-  APPS: |
-    erpnext:version-15
-    hrms:version-15
-```
+<!-- CONTACT -->
+## Contact
 
-### Adding or Removing Apps:
+Questions or feedback? Please open an issue on GitHub.
 
-Simply edit the `APPS` list in `docker-compose.yml`. You can also add comments using `#`:
+Repo: [https://github.com/washmoredevelopment/erpnext-dev-container](https://github.com/washmoredevelopment/erpnext-dev-container)
 
-```yaml
-APPS: |
-  # Core apps
-  erpnext:version-15
-  hrms:version-15
-  
-  # Optional Frappe apps
-  payments:version-15   # Specific branch
-  insights              # Defaults to main branch        
-  
-  # Custom + private apps
-  custom_app:version-15:git@github.com:username/custom_app.git
-```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## SSH Keys
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/washmoredevelopment/erpnext-dev-container.svg?style=flat
+[contributors-url]: https://github.com/washmoredevelopment/erpnext-dev-container/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/washmoredevelopment/erpnext-dev-container.svg?style=flat
+[forks-url]: https://github.com/washmoredevelopment/erpnext-dev-container/network/members
+[stars-shield]: https://img.shields.io/github/stars/washmoredevelopment/erpnext-dev-container.svg?style=flat
+[stars-url]: https://github.com/washmoredevelopment/erpnext-dev-container/stargazers
+[issues-shield]: https://img.shields.io/github/issues/washmoredevelopment/erpnext-dev-container.svg?style=flat
+[issues-url]: https://github.com/washmoredevelopment/erpnext-dev-container/issues
+[license-shield]: https://img.shields.io/badge/License-MIT-green?style=flat
+[license-url]: https://github.com/washmoredevelopment/erpnext-dev-container/blob/main/LICENSE
 
-The setup can copy your SSH key into the container for accessing private repositories if `SSH_KEY_PATH` is provided. You can customize this path in your `.env` file:
-```env
-SSH_KEY_PATH=/path/to/your/.ssh/key
-```
-
-The key is copied into the container at startup, ensuring:
-- Your host SSH key remains read-only and protected
-- The container can manage its own `known_hosts` file
-- New Git hosts are automatically accepted (StrictHostKeyChecking=accept-new)
-- Private repository access works seamlessly
-### Development Workflow with Custom Apps:
-
-If you're developing a custom app, you can:
-1. Mount your local app directory as a volume
-2. Or specify it in `ADDITIONAL_APPS` to clone from a repository
-
-Example with local development:
-```yaml
-# In docker-compose.yml
-volumes:
-  - ./my-custom-app:/home/frappeuser/frappe-bench/apps/my-custom-app
-```
-
-Example with remote, private development:
-```yaml
-APPS: |
-  ... existing apps
-  your_app:branch:git@github.com:username/custom_app.git
-```
-
-## Ports
-
-The following ports are exposed:
-- `8000`: Frappe/ERPNext web interface
-- `9000`: Frappe/ERPNext socketio service
-- `3306`: MariaDB (optional; commented out by default)
-- `6379`: Redis (optional; commented out by default)
-- `3010`: Misc use (optional; commented out by default)
-
-## Troubleshooting
-
-### Container exits immediately
-Check logs with `docker compose logs`. Common issues:
-- Port conflicts (especially 8000, 3306, 6379)
-- Insufficient memory
-- Volume permission issues
-
-### Site not accessible
-- Ensure the container is running: `docker compose ps`
-- Check if services are running: `docker compose exec frappe bash -c "sudo service mariadb status && sudo service redis-server status"`
-- Verify site exists: `docker compose exec frappe zsh -lc "cd /home/frappeuser/frappe-bench && bench list-sites"`
-
-### "Module not found" errors
-This typically means one of your apps isn't properly installed. The container handles this automatically, but if you encounter issues, you can manually install an app:
-
-```bash
-# For Frappe apps (e.g., payments, insights)
-docker compose exec frappe bash -lc "source ~/.nvm/nvm.sh && cd /home/frappeuser/frappe-bench && bench get-app APP_NAME && bench --site development.localhost install-app APP_NAME"
-
-# For private repositories
-docker compose exec frappe bash -lc "source ~/.nvm/nvm.sh && cd /home/frappeuser/frappe-bench && bench get-app git@github.com:username/custom_app.git --branch main && bench --site development.localhost install-app app"
-```
-
-### Reset everything
-To completely start over:
-```bash
-docker compose down -v # DESTRUCTIVE - ensure your data is backed up
-rm -rf frappe-data frappe-mysql  # If volumes are stored locally
-docker compose build --no-cache
-docker compose up
-```
+[Docker]: https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white
+[Docker-url]: https://www.docker.com/
+[Ubuntu]: https://img.shields.io/badge/Ubuntu-E95420?style=flat&logo=ubuntu&logoColor=white
+[Ubuntu-url]: https://ubuntu.com/
+[Python.py]: https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white
+[Python-url]: https://python.org/
+[Frappe.io]: https://img.shields.io/badge/Frappe-0089FF?style=flat&logo=frappe&logoColor=white
+[Frappe-url]: https://frappeframework.com/
+[ERPNext.com]: https://img.shields.io/badge/ERPNext-0089FF?style=flat&logo=erpnext&logoColor=white
+[ERPNext-url]: https://erpnext.com/
+[Node.js]: https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white
+[Node-url]: https://nodejs.org/
+[MariaDB]: https://img.shields.io/badge/MariaDB-003545?style=flat&logo=mariadb&logoColor=white
+[MariaDB-url]: https://mariadb.org/
+[Redis]: https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white
+[Redis-url]: https://redis.io/
