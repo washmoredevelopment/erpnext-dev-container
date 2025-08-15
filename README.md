@@ -2,8 +2,8 @@
 
 <a href="https://github.com/washmoredevelopment/erpnext-dev-container">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/erpdev_white.png">
-    <img alt="logo" src="./.github/assets/erpdev_blue.png" width="100">
+    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/erpdev_dark.png">
+    <img alt="logo" src="./.github/assets/erpdev_light.png" width="100">
   </picture>
 </a>
 
