@@ -7,7 +7,7 @@
   </picture>
 </a>
 
-# ERPNext Dev Container
+# erpnext dev container
 
 **One click containerized environment for ERPNext Development**
 
