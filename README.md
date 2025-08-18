@@ -54,7 +54,15 @@
 
 ERPNext Dev Container is a single-container Docker setup for Frappe/ERPNext v15 development. It initializes a complete bench on first run, installs configured apps, creates a site, and provides a fast, repeatable workflow for local development on macOS, Linux, and Windows with Docker Desktop.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+- Single-container setup on Ubuntu 24.04 LTS
+- Flexible app configuration via `APPS` in `docker-compose.yml`
+- Optional private repo access via `SSH_KEY_PATH`
+- All dependencies included (MariaDB, Redis, Python, Node)
+- Developer mode and `bench watch` enabled
+- Persistent volumes: `frappe-data` and `frappe-mysql`
+- Health checks with clear status and logs
+- ARM64 and AMD64 supported
+- Run multiple containers for isolated environments
 
 ### Built With
 
@@ -71,8 +79,6 @@ ERPNext Dev Container is a single-container Docker setup for Frappe/ERPNext v15 
 
 </div>
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -84,10 +90,12 @@ ERPNext Dev Container is a single-container Docker setup for Frappe/ERPNext v15 
 
 ### Installation
 
-1. Clone the repository
+#### Option 1: Using Pre-built Image
+
+1. Download the configuration files
    ```bash
-   git clone https://github.com/washmoredevelopment/erpnext-dev-container.git
-   cd erpnext-dev-container
+   curl -o docker-compose.yml https://raw.githubusercontent.com/washmoredevelopment/erpnext-dev-container/main/docker-compose.yml
+   curl -o env.example https://raw.githubusercontent.com/washmoredevelopment/erpnext-dev-container/main/env.example
    ```
 
 2. Copy the example environment file
@@ -96,16 +104,38 @@ ERPNext Dev Container is a single-container Docker setup for Frappe/ERPNext v15 
    ```
 
 3. (Optional) Edit `.env`:
+   - `IMAGE_TAG` (default: `latest`) - specify version like `v1.0.0`
    - `SITE_NAME` (default: `development.localhost`)
    - `DB_ROOT_PASSWORD`
    - `ADMIN_PASSWORD`
    - `SSH_KEY_PATH` (for private repos)
 
-4. Build and start
+4. Start the container
    ```bash
-   docker compose build
    docker compose up -d
    ```
+
+#### Option 2: Build from Source
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/washmoredevelopment/erpnext-dev-container.git
+   cd erpnext-dev-container
+   ```
+
+2. Copy and configure environment
+   ```bash
+   cp env.example .env
+   # Edit .env as needed
+   ```
+
+3. Build and start
+   ```bash
+   docker compose -f docker-compose.build.yml build
+   docker compose -f docker-compose.build.yml up -d
+   ```
+
+#### Completing Setup
 
 5. First run takes ~10–15 minutes to initialize
 
@@ -124,20 +154,20 @@ ERPNext Dev Container is a single-container Docker setup for Frappe/ERPNext v15 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-### Container management
+#### Container management
 ```bash
 docker compose up -d      # start
 docker compose down       # stop
 docker compose logs -f    # logs
 ```
 
-### Shell and bench
+#### Shell and bench
 ```bash
 docker compose exec frappe zsh
 docker compose exec frappe zsh -lc "cd /home/frappeuser/frappe-bench && bench <command>"
 ```
 
-### Container health
+#### Container health
 ```bash
 # Check container health
 docker ps  # Shows health: starting/healthy/unhealthy
@@ -149,19 +179,62 @@ docker exec -it frappe-dev cat /tmp/container_health
 docker exec -it frappe-dev /usr/local/bin/health-check
 ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+#### Running Multiple Containers
+```
+services:
+  # First ERPNext instance
+  frappe-dev1:
+    image: ghcr.io/washmoredevelopment/erpnext-dev-container:${IMAGE_TAG:-latest}
+    container_name: frappe-dev1
+    env_file:
+      - .env.dev1
+    ports:
+      - "8001:8000"    # Frappe web server
+      - "9001:9000"    # Frappe socketio
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - frappe-data-dev1:/home/frappeuser
+      - frappe-mysql-dev1:/var/lib/mysql
+      - ${SSH_KEY_PATH}:/tmp/ssh_key:ro
+    tty: true
+    stdin_open: true
+    restart: "no"
+    environment:
+      APPS: |
+        erpnext:version-15
+        hrms:version-15
 
-<!-- FEATURES -->
-## Features
+  # Second ERPNext instance  
+  frappe-dev2:
+    image: ghcr.io/washmoredevelopment/erpnext-dev-container:${IMAGE_TAG:-latest}
+    container_name: frappe-dev2
+    env_file:
+      - .env.dev2
+    ports:
+      - "8002:8000"    # Frappe web server
+      - "9002:9000"    # Frappe socketio
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - frappe-data-dev2:/home/frappeuser
+      - frappe-mysql-dev2:/var/lib/mysql
+      - ${SSH_KEY_PATH}:/tmp/ssh_key:ro
+    tty: true
+    stdin_open: true
+    restart: "no"
+    environment:
+      APPS: |
+        erpnext:version-15
+        hrms:version-15
+        # You can have different apps per instance
 
-- Single-container setup on Ubuntu 24.04 LTS
-- Flexible app configuration via `APPS` in `docker-compose.yml`
-- Optional private repo access via `SSH_KEY_PATH`
-- All dependencies included (MariaDB, Redis, Python, Node)
-- Developer mode and `bench watch` enabled
-- Persistent volumes: `frappe-data` and `frappe-mysql`
-- Health checks with clear status and logs
-- ARM64 and AMD64 supported
+volumes:
+  frappe-data-dev1:
+  frappe-mysql-dev1:
+  frappe-data-dev2:
+  frappe-mysql-dev2:
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

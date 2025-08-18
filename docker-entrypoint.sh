@@ -613,5 +613,12 @@ main() {
     start_bench "$@"
 }
 
-# Run main function with all arguments
-main "$@"
+# Check if this is an interactive shell session (bypass setup for shells)
+if [[ "$1" == "/bin/bash" || "$1" == "/bin/zsh" || "$1" == "bash" || "$1" == "zsh" || "$1" == "sh" ]]; then
+    log_info "Interactive shell detected, bypassing setup..."
+    cd "$HOME" || exit 1
+    exec "$@"
+else
+    # Run main function with all arguments for normal startup
+    main "$@"
+fi

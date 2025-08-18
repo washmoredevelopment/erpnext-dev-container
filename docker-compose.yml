@@ -1,9 +1,6 @@
 services:
   frappe:
-    build:
-      context: .
-      args:
-        NODE_VERSION: ${NODE_VERSION:-18}
+    image: ghcr.io/washmoredevelopment/erpnext-dev-container:${IMAGE_TAG:-latest}
     container_name: frappe-dev
     env_file:
       - .env
